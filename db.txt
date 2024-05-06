@@ -1,0 +1,17 @@
+account:
+    id,email,password
+
+student:
+    id,account_id,affiliation,bio.
+
+instructor:
+    id,account_id,years of experience,affiliation,bio.
+
+course:
+    id,instructor_id,name,duration,category,capacity,content
+
+enrollment:
+    id,course_id,student_id,rating,review,status
+
+status_update:
+    id,enrollment_id,prev_status,new_status,date
