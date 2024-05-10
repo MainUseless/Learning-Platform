@@ -69,6 +69,21 @@
       <version>2.4</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/jakarta.jms/jakarta.jms-api -->
+    <dependency>
+        <groupId>jakarta.jms</groupId>
+        <artifactId>jakarta.jms-api</artifactId>
+        <version>3.1.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/jakarta.enterprise/jakarta.enterprise.cdi-api -->
+    <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>4.0.1</version>
+    </dependency>
+
+
   </dependencies>
 
   <build>
@@ -118,9 +133,14 @@
           <version>3.3.2</version>
           <configuration>
             <failOnMissingWebXml>false</failOnMissingWebXml>
-            <warName>${artifactId}</warName>
+            <warName>${artifactId}-${version}</warName>
             </configuration>
         </plugin>
+        <!-- <plugin>
+          <groupId>org.wildfly.plugins</groupId>
+          <artifactId>wildfly-maven-plugin</artifactId>
+          <version>5.0.0.Final</version>
+        </plugin> -->
       </plugins>
     </pluginManagement>
   </build>

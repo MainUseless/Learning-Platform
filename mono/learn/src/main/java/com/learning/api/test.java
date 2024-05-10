@@ -15,35 +15,35 @@ import jakarta.ws.rs.Path;
 @Path("/sample")
 public class test {
 
-  @Resource
-  EJBContext context;
+	@Resource
+	EJBContext context;
 
-  @PersistenceContext(unitName = "DB")
-  private EntityManager em;
+	@PersistenceContext(unitName = "DB")
+	private EntityManager em;
 
-  @GET
-  @Path("/test1")
-  public String getString() {
-    return "test123123123";
-  }
+	@GET
+	@Path("/test1")
+	public String getString() {
+		return "test123123123";
+	}
 
-  @POST
-  @Path("/test2")
-  public boolean getString2() {
-    // try{
-    Course course = new Course("Java","Java is a programming language");
-    em.persist(course);
-    return true;
-    // }catch(Exception e){
-    //   return false;
-    // }
-  }
+	@POST
+	@Path("/test2")
+	public boolean getString2() {
+		// try{
+		Course course = new Course("Java", "Java is a programming language");
+		em.persist(course);
+		return true;
+		// }catch(Exception e){
+		// return false;
+		// }
+	}
 
-  @GET
-  @Path("/test3")
-  public String getString3() {
-    Course course = em.find(Course.class, 1);
-    return course.getName();
-  }
+	@GET
+	@Path("/test3")
+	public String getString3() {
+		Course course = em.find(Course.class, 1);
+		return course.getName();
+	}
 
 }
