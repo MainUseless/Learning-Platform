@@ -16,13 +16,13 @@ import jakarta.jms.TextMessage;
  *
  * @author Serge Pagop (spagop@redhat.com)
  */
-@MessageDriven(name = "HelloWorldQueueMDB", activationConfig = {
-        @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/HELLOWORLDMDBQueue"),
+@MessageDriven(name = "CourseRegistrationQueueMDB", activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/CourseRegistrationQueue"),
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")})
-public class HelloWorldQueueMDB implements MessageListener {
+public class CourseRegistrationQueueMDB implements MessageListener {
 
-    private static final Logger LOGGER = Logger.getLogger(HelloWorldQueueMDB.class.toString());
+    private static final Logger LOGGER = Logger.getLogger(CourseRegistrationQueueMDB.class.toString());
 
     /**
      * @see MessageListener#onMessage(Message)
