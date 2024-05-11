@@ -1,0 +1,8 @@
+FROM rapidfort/flaskapp:latest
+RUN mkdir /NotificationService
+COPY ./APIs.py /NotificationService
+COPY ./DB.py /NotificationService
+WORKDIR /NotificationService
+RUN pip install flask_cors
+EXPOSE 5000
+CMD ["python", "APIs.py"]
