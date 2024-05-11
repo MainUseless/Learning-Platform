@@ -6,7 +6,7 @@ from DB import conn
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/addnotification', methods=['POST'])
+@app.route('/notification', methods=['POST'])
 def add_notification():
   data = request.get_json()
   stud_id = data['stud_id']
@@ -23,7 +23,7 @@ def add_notification():
 
   return jsonify({'message': 'Notification added'}), 201
 
-@app.route('/getnotifications', methods=['GET'])
+@app.route('/notifications', methods=['GET'])
 def get_unread_notifications():
   stud_id = request.args.get('stud_id')
   conn = sqlite3.connect('notification.db')
@@ -42,7 +42,7 @@ def get_unread_notifications():
 
   return jsonify(unread_notifications)
 
-@app.route('/getunreadnotificationcount', methods=['GET'])
+@app.route('/unreadnotification', methods=['GET'])
 def get_unread_notification_count():
     stud_id = request.args.get('stud_id')
     
