@@ -1,7 +1,9 @@
 import jwt
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import sqlite3
 from flask_cors import CORS
+import requests
+import os
 from DB import conn
 
 app = Flask(__name__)
@@ -66,13 +68,33 @@ def decode_token(request):
     encoded_token = request.headers.get('Authorization', None)
     encoded_token = encoded_token.split(' ')[1]
     try:
-      # Set verify_signature to False to skip signature validation
-      token = jwt.decode(encoded_token, options={"verify_signature": False}) 
-      return token
+        # Set verify_signature to False to skip signature validation
+        token = jwt.decode(encoded_token, options={"verify_signature": False}) 
+        return token
     except Exception as e:
-      print(f"Error decoding JWT: {e}")
-      return None
+        print(f"Error decoding JWT: {e}")
+        return None
+
+@app.before_request
+def validate_token():
+    try:
+        encoded_token = request.headers.get('Authorization', None)
+        if encoded_token is None:
+            return Response('Unauthorized: Authorization header is missing', status=401)
+            
+        encoded_token = encoded_token.split(' ')[1]
+        
+        res = requests.get(os.getenv('AUTH_URL'), headers={'Authorization': f'Bearer {encoded_token}'})
+        
+        if res.status_code != 200:
+            return Response('Unauthorized: Authorization header is Invalid', status=401)
+            
+    except Exception as e:
+        return Response('error: Internal server error', status=500)
+
+    return
 
 if __name__ == "__main__":
+    print("Starting Notification Service")    
     app.run(host='0.0.0.0', port=8082)
     # app.run(debug=True)
