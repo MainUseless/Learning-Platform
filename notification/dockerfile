@@ -1,8 +1,9 @@
 FROM rapidfort/flaskapp:latest
 RUN mkdir /NotificationService
-COPY ./APIs.py /NotificationService
-COPY ./DB.py /NotificationService
-WORKDIR /NotificationService
-RUN pip install flask_cors
-EXPOSE 5000
+# COPY ./APIs.py /NotificationService
+# COPY ./DB.py /NotificationService
+# WORKDIR /NotificationService
+RUN pip install flask_cors pyjwt
+ENV AUTH_URL=http://localhost:8081
+EXPOSE 8082
 CMD ["python", "APIs.py"]
