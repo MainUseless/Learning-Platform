@@ -55,5 +55,5 @@ def get_unread_notification_count():
     return "You Have " + str(unread_count) + " Unread Notifications"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8082)
     # app.run(debug=True)

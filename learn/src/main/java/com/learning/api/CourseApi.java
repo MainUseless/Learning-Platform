@@ -34,7 +34,7 @@ public class CourseApi {
 
     @Resource
     EJBContext context;
-  
+   
     @PersistenceContext(unitName = "DB")
     private EntityManager em;
 
