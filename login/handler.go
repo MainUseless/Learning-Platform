@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -9,14 +10,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-
-
-type Claims struct {
-	jwt.Claims
-	// Add custom claims if needed
-}
-
 
 type User struct {
 	Email	string `json:"email"`
@@ -32,7 +25,10 @@ func SignIn(ctx *fiber.Ctx) error {
 	var data map[string]string
 	err := ctx.BodyParser(&data)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "error in parsing data",
+		})
 	}
 
 	if data["email"] == "" || data["password"] == "" {
@@ -40,7 +36,7 @@ func SignIn(ctx *fiber.Ctx) error {
 	}
 
 
-	id,name,password,role := GetUser(data["email"])
+	id,name,password,role,bio,affiliation,yearsOfExperience := GetUser(data["email"])
 
 	if id == -1 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Account not found"})
@@ -57,6 +53,9 @@ func SignIn(ctx *fiber.Ctx) error {
 		"name":  name,
 		"role":  role,
 		"email": data["email"],
+		"bio": bio,
+		"affiliation": affiliation,
+		"years_of_experience": yearsOfExperience,
 		// "exp":   time.Now().Add(time.Hour * 72).Unix(),
 	}
 
@@ -79,6 +78,7 @@ func SignUp(ctx *fiber.Ctx) error {
 	var data map[string]string
 	if err := ctx.BodyParser(&data)
 	err != nil {
+		log.Println(err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "error in parsing data",
 		})
@@ -102,56 +102,30 @@ func SignUp(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//start transaction
-	tx, err := DB.Begin()
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON("Error in starting transaction")
-	}
 	data["password"] = string(hashedPassword)
-	id := InsertUser(data["name"],data["email"],data["password"],data["role"])
+
+	yearsOfExperience, err := strconv.Atoi(data["years_of_experience"])
+    if err != nil {
+        return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid years of experience",
+		})
+
+    }
+
+	// for key, value := range data {
+	// 	fmt.Println("Key:", key, "Value:", value)
+	//   }
+
+	id := InsertUser(data["name"],data["email"],data["password"],data["role"],data["bio"],data["affiliation"],yearsOfExperience)
 	if id == -1 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Account already exists or error in creating account",
 		})
 	}
 
-	delete(data,"email")
-	delete(data,"password")
-	delete(data,"name")
-	data["id"] = strconv.Itoa(id)
-	//commit
-	if(addAccount(data)){
-		err = tx.Commit()
-		if err != nil {
-			return ctx.Status(fiber.StatusBadRequest).JSON("Error in committing transaction")
-		}
-		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Account created successfully",
-		})
-	}
-
-	//rollback
-	err = tx.Rollback()
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON("Error in adding account and rolling back transaction")
-	}
-	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"error": "Error in adding account",
-	})
+	return ctx.Status(fiber.StatusOK).JSON("Account created")
 
 }
-
-
-func addAccount(data map[string]string) bool{
-	addaccountUrl := os.Getenv("SERVICE_URL")+"addaccount"
-
-	
-
-
-	return false
-
-}
-
 
 func Auth(ctx *fiber.Ctx) error{
 	return ctx.Status(fiber.StatusOK).JSON("Authenticated")

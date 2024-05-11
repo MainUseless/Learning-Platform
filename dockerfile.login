@@ -2,10 +2,11 @@
 FROM golang:1.21.3-bullseye as go-builder
 
 WORKDIR /usr/src/app
-EXPOSE 8081
-ENV PORT=8081
-ENV SERVICE_URL="http://localhost:8080/"
+
+VOLUME /usr/src/app
 ENV JWT_SECRET="ws-ws-ws-w"
+
+EXPOSE 8081
 
 RUN echo "while true; do sleep 1000; done" > /test.sh
 CMD ["sh","/test.sh"]

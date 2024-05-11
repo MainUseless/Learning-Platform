@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -12,17 +11,11 @@ import (
 )
 
 func checkEnv(){
-	if os.Getenv("PORT") == "" {
-		log.Fatal("$PORT must be set")
-	}
 
 	if os.Getenv("JWT_SECRET") == "" {
-		log.Fatal("$JWT_SECRET must be set")
+		os.Setenv("JWT_SERRET", "secret")
 	}
 
-	if os.Getenv("ROLES_URL") == "" {
-		log.Fatal("$ROLES_URL must be set")
-	}
 }
 
 func main() {
@@ -53,5 +46,5 @@ func main() {
 	// }
 
 	// start server
-	app.Listen(":"+ os.Getenv("PORT"))
+	app.Listen(":8081")
 }
