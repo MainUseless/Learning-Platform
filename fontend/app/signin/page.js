@@ -3,18 +3,39 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const Login = () => {
-    const [isLogin, setIsLogin] = useState(true);
+const Signin = () => {
+    // const [isLogin, setIsLogin] = useState(true);
 
-    const checkLogin = () => {
-        console.log('checking login')
-        if(document.cookie){
-            console.log('redirecting')
-            redirect('/')
-        }
-    };
+    // const checkLogin = () => {
+    //     console.log('checking login')
+    //     if(document.cookie){
+    //         console.log('redirecting')
+    //         redirect('/')
+    //     }
+    // };
 
-    checkLogin();
+    // checkLogin();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+
+        const res = await fetch('http://localhost:8081/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        // if (res.status === 200) {
+        //     console.log('Login success');
+        //     redirect('/');
+        // } else {
+        //     console.log('Login failed');
+        // }
+    }
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -22,7 +43,7 @@ const Login = () => {
                 <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
                     Login
                 </h2>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                             Email Address
@@ -68,4 +89,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signin;

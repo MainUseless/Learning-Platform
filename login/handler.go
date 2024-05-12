@@ -103,6 +103,9 @@ func SignUp(ctx *fiber.Ctx) error {
 	}
 
 	data["password"] = string(hashedPassword)
+	
+	if(yearsOfExperience=="")
+		yearsOfExperience = "0"
 
 	yearsOfExperience, err := strconv.Atoi(data["years_of_experience"])
     if err != nil {

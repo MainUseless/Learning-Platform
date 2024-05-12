@@ -7,6 +7,7 @@ import jakarta.interceptor.InvocationContext;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
 
 @Interceptor
 public class Auth {
@@ -20,14 +21,28 @@ public class Auth {
     private HttpHeaders httpHeaders;
 
     @AroundInvoke
-    public Object validate(InvocationContext context)throws Exception{
+    public Object validate(InvocationContext context){
+
         String authToken = httpHeaders.getHeaderString("Authorization");
         if(authToken == null){
-            throw new Exception("Authorization token not found");
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        System.out.println("Auth token: " + authToken);
 
-    return context.proceed(); // Call the actual endpoint method
+        authUrl = "http://go-learn:8081/auth"; // This should be the URL of the authentication service
+        Response res = client.target(authUrl)
+                .request()
+                .header("Authorization", authToken)
+                .get(); // This will throw an exception if the token is invalid
+        
+        if(res.getStatus() != 200){
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+    try {
+        return context.proceed();
+    } catch (Exception e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    } 
   }
 
 }

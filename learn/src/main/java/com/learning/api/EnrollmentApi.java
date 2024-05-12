@@ -3,10 +3,12 @@ package com.learning.api;
 import java.util.List;
 
 import com.learning.entity.Enrollment;
+import com.learning.util.Auth;
 
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptors;
 import jakarta.jms.JMSContext;
 import jakarta.jms.JMSDestinationDefinition;
 import jakarta.jms.JMSDestinationDefinitions;
@@ -19,12 +21,13 @@ import jakarta.ws.rs.Path;
 
 @Path("/enrollment")
 @Stateless
+@Interceptors(Auth.class)
 @JMSDestinationDefinitions(
     value = {
         @JMSDestinationDefinition(
-                name = "java:/queue/CourseRegistrationQueue",
-                interfaceName = "jakarta.jms.Queue",
-                destinationName = "CourseRegistrationQueue"
+            name = "java:/queue/CourseRegistrationQueue",
+            interfaceName = "jakarta.jms.Queue",
+            destinationName = "CourseRegistrationQueue"
         )
     }
 )
@@ -51,7 +54,7 @@ public class EnrollmentApi {
 
     @DELETE
     @Path("/{course_id}")
-    public boolean unenrollCourse() {
+    public boolean dropCourse() {
         return true;
     }
 
@@ -62,7 +65,7 @@ public class EnrollmentApi {
     }
 
     @POST
-    @Path("/{course_id}/review")
+    @Path("/review")
     public boolean reviewCourse() {
         return true;
     }

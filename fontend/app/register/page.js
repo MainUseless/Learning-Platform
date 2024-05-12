@@ -10,26 +10,26 @@ const RegistrationForm = () => {
         email: '',
         password: '',
         affiliation: '',
-        yearsOfExperience: '',
+        years_of_experience: '',
         bio: '',
-        accountType: 'student',
+        role: 'STUDENT',
     });
     const [errors, setErrors] = useState({});
     const [registrationError, setRegistrationError] = useState(null);
     const [yearsOfExperience, setYearsOfExperience] = useState(null);
 
 
-    const checkLogin = () => {
-        console.log('checking login')
-        if(document.cookie){
-            console.log('redirecting')
-            redirect('/')
-        }
-    };
+    // const checkLogin = () => {
+    //     console.log('checking login')
+    //     if(document.cookie){
+    //         console.log('redirecting')
+    //         redirect('/')
+    //     }
+    // };
 
-    useEffect(() => {
-        checkLogin();
-    })
+    // useEffect(() => {
+    //     checkLogin();
+    // })
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -83,19 +83,12 @@ const RegistrationForm = () => {
     const handleSubmit = async(e) => {
         e.preventDefault();
     
-        const newErrors = validateForm();
-    
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-    
         try {
             setRegistrationError(null);
             console.log('Registering with:', formState);
             
             // Send the registration request
-            const response = await fetch('/api/register', {
+            const response = await fetch('http://localhost:8081/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

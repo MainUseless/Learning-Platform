@@ -40,4 +40,5 @@ public class CourseRegistrationQueueMDB implements MessageListener {
             throw new RuntimeException(e);
         }
     }
+    
 }
