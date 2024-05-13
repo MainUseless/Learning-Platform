@@ -12,7 +12,7 @@ const RegistrationForm = () => {
         email: '',
         password: '',
         affiliation: '',
-        years_of_experience: '',
+        years_of_experience: 0,
         bio: '',
         role: 'student',
     });
@@ -90,7 +90,7 @@ const RegistrationForm = () => {
         try {
             setRegistrationError(null);
             console.log('Registering with:', formState);
-            
+            formState.years_of_experience = parseInt(formState.years_of_experience);
             // Send the registration request
             const response = await fetch('http://localhost:8081/signup', {
                 method: 'POST',

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie'; // Import the js-cookie library
-import Course from '../../components/Course';
+import Course from '../../../public/components/Course';
 
 const Courses = () => {
     const router = useRouter();
@@ -28,6 +28,7 @@ const Courses = () => {
     }
 
     useEffect(() => {
+        localStorage.clear();
         fetchCourses('pending').then(data => {
             setPendingCourses(data);
             console.log(data);
@@ -48,13 +49,13 @@ const Courses = () => {
                     <div class="developer flex-grow-1">
                         <h1 className="text-2xl font-semibold mb-4">Approved Courses</h1>
                         {approvedCourses.map(course => (
-                            <Course key={course.id} course={course} />
+                            <Course key={course.id} course={course} path={'/admin/courses/'} />
                         ))}
                     </div>
                     <div class="developer flex-grow-1"> 
                         <h1 className="text-2xl font-semibold mb-4">Pending Courses</h1>
                         {pendingCourses.map(course => (
-                            <Course key={course.id} course={course} />
+                            <Course key={course.id} course={course} path={'/admin/courses/'} />
                         ))}
                     </div>
                 </div>

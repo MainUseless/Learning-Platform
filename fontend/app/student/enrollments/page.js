@@ -7,17 +7,40 @@ import Cookies from 'js-cookie';
 
 const Enrollments = () => {
     const router = useRouter();
+    const [selectedView, setSelectedView] = useState(''); // Initialize selectedView state
+    const [pastEnrollments, setPastEnrollments] = useState([]);
+    const [currentEnrollments, setCurrentEnrollments] = useState([]);
+
     useEffect(() => {
         const authToken = Cookies.get('authToken');
     
         if(!authToken)
             router.push('/signin');
+        else {
+            // Fetch past enrollments
+            fetch('http://localhost:8080/learn/enrollment', {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => setPastEnrollments(data))
+            .catch(error => console.error('Error fetching past enrollments:', error));
+
+            // Fetch current enrollments
+            fetch('http://localhost:8080/learn/enrollment', {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => setCurrentEnrollments(data))
+            .catch(error => console.error('Error fetching current enrollments:', error));
+        }
     }, []);
 
-    const [selectedView, setSelectedView] = useState('');
-
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100  text-black">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">
             <h1 className="text-2xl font-semibold mb-8">Enrollments</h1>
 
             <div className="flex space-x-4 mb-8">
@@ -42,15 +65,23 @@ const Enrollments = () => {
 
             {selectedView === 'past' && (
                 <div>
-                    {/* Render past enrollments */}
-                    <p>List of past enrollments...</p>
+                    <h2 className="text-xl font-semibold mb-4">Past Enrollments</h2>
+                    <ul>
+                        {pastEnrollments.map((enrollment, index) => (
+                            <li key={index}>{enrollment.courseName}</li>
+                        ))}
+                    </ul>
                 </div>
             )}
 
             {selectedView === 'current' && (
                 <div>
-                    {/* Render current enrollments */}
-                    <p>List of current enrollments...</p>
+                    <h2 className="text-xl font-semibold mb-4">Current Enrollments</h2>
+                    <ul>
+                        {currentEnrollments.map((enrollment, index) => (
+                            <li key={index}>{enrollment.courseName}</li>
+                        ))}
+                    </ul>
                 </div>
             )}
 

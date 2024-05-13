@@ -16,7 +16,7 @@ import lombok.Data;
     @NamedQuery(name = "Enrollment.updateStatus", query = "UPDATE Enrollment e SET e.Status = :Status WHERE e.course = :course AND e.id = :id"),
     @NamedQuery(name = "Enrollment.updateRating", query = "UPDATE Enrollment e SET e.rating = :rating WHERE e.course = :course AND e.id = :id"),
     @NamedQuery(name = "Enrollment.updateReview", query = "UPDATE Enrollment e SET e.review = :review WHERE e.course = :course AND e.id = :id"),
-    @NamedQuery(name = "Enrollment.countEnrolledByCourseId", query = "SELECT COUNT(e) FROM Enrollment e WHERE e.course = :course and e.Status = 'ENROLLED'"),
+    @NamedQuery(name = "Enrollment.countEnrolledByCourseId", query = "SELECT COUNT(e) FROM Enrollment e WHERE e.course = :course"),
 })
 public class Enrollment {
 

@@ -10,7 +10,7 @@ const Homepage = () => {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [role, setRole] = useState('');
-    const [showPopup, setShowPopup] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
     const [popupData, setPopupData] = useState(null);
 
     useEffect(() => {
@@ -45,18 +45,18 @@ const Homepage = () => {
             <nav className="mb-8">
                 <ul className="flex flex-col space-y-2">
                     <li>
-                        <Link legacyBehavior href="/enrollments">
-                            <a className="text-blue-500 hover:text-blue-600">Enrollments</a>
+                        <Link legacyBehavior href="/instructor/createCourses">
+                            <a className="text-blue-500 hover:text-blue-600">Create Courses</a>
                         </Link>
                     </li>
                     <li>
-                        <Link legacyBehavior href="/courses" passHref>
+                        <Link legacyBehavior href="/instructor/courses" passHref>
                             <a className="text-blue-500 hover:text-blue-600">Courses</a>
                         </Link>
                     </li>
                     <li>
                         <Link legacyBehavior href="/user-courses" passHref>
-                            <a className="text-blue-500 hover:text-blue-600">My Courses</a>
+                            <a className="text-blue-500 hover:text-blue-600">Manage Enrollments</a>
                         </Link>
                     </li>
                     <li>

@@ -120,7 +120,7 @@ public class CourseApi {
 
     @PUT
     @Path("/")
-    public Response updateCourse(@QueryParam("status") String status,@QueryParam("course_id") int course_id){
+    public Response updateCourse(Course course){
         // Access headers from the context
         String authToken = headers.getRequestHeaders().getFirst("Authorization");
         // Get the Authorization header
@@ -131,22 +131,18 @@ public class CourseApi {
         }
 
         String role = jwt.get("role");
-        // return Response.status(Response.Status.FOUND).entity(status).build();
 
+        course.setStatus(course.getStatus().toUpperCase());
+        
         if(role.toUpperCase().equals("ADMIN")){
-            if(status == null || course_id == 0){
-                return Response.status(Response.Status.BAD_REQUEST).entity("status and course_id are required").build();
-            }
-            if(!status.equals("APPROVED") && !status.equals("REJECTED")){
+            if(!course.getStatus().equals("APPROVED") && !course.getStatus().equals("REJECTED")){
                 return Response.status(Response.Status.BAD_REQUEST).entity("status should be either APPROVED or REJECTED").build();
             }
-            int affectedRows = em.createNamedQuery("Course.updateStatus").setParameter("status", status).setParameter("id", course_id).executeUpdate();
-            if(affectedRows == 0){
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
+            em.merge(course);
             return Response.status(Response.Status.ACCEPTED).build();
+        }else{
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @DELETE

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -82,6 +83,7 @@ func SignUp(ctx *fiber.Ctx) error {
 	var user User
 	if err := ctx.BodyParser(&user)
 	err != nil {
+		log.Println(err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "error in parsing data",
 		})
