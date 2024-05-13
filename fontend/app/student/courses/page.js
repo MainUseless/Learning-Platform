@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Course from '../../components/Course';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const Courses = () => {
+    const router = useRouter();
     const [courses, setCourses] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchOption, setSearchOption] = useState('name');
@@ -10,13 +15,22 @@ const Courses = () => {
     const [filteredCourses, setFilteredCourses] = useState([]);
 
     useEffect(() => {
+        const authToken = Cookies.get('authToken');
+    
+        if(!authToken)
+            router.push('/signin');
         // Fetch courses from the backend when the component mounts
         fetchCourses();
     }, []);
 
     const fetchCourses = async () => {
+        const authToken = Cookies.get('authToken');
         try {
-            const response = await fetch('https://example.com/api/courses');
+            const response = await fetch('https://0337-45-243-99-183.ngrok-free.app/learn/course', {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch courses');
             }
@@ -49,6 +63,12 @@ const Courses = () => {
         <div className="flex flex-col items-center justify-top min-h-screen bg-gray-100 text-black">
             <div className="container mx-auto w-full">
                 <h1 className="text-2xl font-semibold mb-8">Courses</h1>
+
+                <div className="mt-8">
+                <Link legacyBehavior href="/student">
+                    <a className="text-blue-500 hover:text-blue-600">Back to Home</a>
+                </Link>
+                </div>
 
                 <div className="flex items-center mb-4 w-full">
                     <input
@@ -90,9 +110,7 @@ const Courses = () => {
                     <ul>
                         {filteredCourses.map(course => (
                             <li key={course.id} className="bg-white p-4 rounded shadow mb-4">
-                                <h2 className="text-xl font-semibold">{course.name}</h2>
-                                <p className="text-gray-500">{course.category}</p>
-                                <p className="text-blue-500">{course.rating}</p>
+                                <Course key={course.id} course={course} />
                             </li>
                         ))}
                     </ul>

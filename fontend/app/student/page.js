@@ -67,13 +67,8 @@ const Homepage = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link legacyBehavior href="/user-courses" passHref>
-                            <a className="text-blue-500 hover:text-blue-600">My Courses</a>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link legacyBehavior href="/notifications" passHref>
-                        <a className="text-blue-500 hover:text-blue-600">My Notifications</a>
+                        <Link legacyBehavior href="student/notifications" passHref>
+                        <a className="text-blue-500 hover:text-blue-600">Notifications</a>
                         </Link>
                     </li>
                     <li>
