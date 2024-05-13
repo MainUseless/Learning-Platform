@@ -63,6 +63,7 @@ public class CourseApi {
             }
             
             String role = jwt.get("role");
+            status = status == null ? null : status.toUpperCase();
     
             if(role.toUpperCase().equals("ADMIN")){
                 if(status!=null){

@@ -155,7 +155,7 @@
           <configuration>
             <failOnMissingWebXml>false</failOnMissingWebXml>
             <warName>${artifactId}-${version}</warName>
-            </configuration>
+          </configuration>
         </plugin>
         <!-- <plugin>
           <groupId>org.wildfly.plugins</groupId>

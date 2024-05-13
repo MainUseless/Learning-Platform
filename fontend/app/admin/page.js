@@ -10,8 +10,6 @@ const Homepage = () => {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [role, setRole] = useState('');
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupData, setPopupData] = useState(null);
 
     useEffect(() => {
         const authToken = Cookies.get('authToken');
@@ -19,10 +17,8 @@ const Homepage = () => {
         if (authToken) {
             try {
                 const decodedToken = jwtDecode(authToken);
+                router.push('/'+decodedToken['role'].toLowerCase()) 
                 setUsername(decodedToken['name']);
-                if(decodedToken['role']!='instructor'){
-                    router.push('/'+decodedToken['role'].toLowerCase()) 
-                }
                 setRole(decodedToken['role']);
             } catch (error) {
                 console.error('Error decoding auth token:', error);
@@ -31,15 +27,9 @@ const Homepage = () => {
         else{
             router.push('/signin');
         }
-        
-        fetch('https://example.com/api/getPopupData')
-            .then(response => response.json())
-            .then(data => {
-                setPopupData(data);
-                setShowPopup(true);
-            })
-            .catch(error => console.error('Error fetching pop-up data:', error));
     }, []);
+
+    
 
     const handleLogout = () => {
         Cookies.remove('authToken');
@@ -53,23 +43,13 @@ const Homepage = () => {
             <nav className="mb-8">
                 <ul className="flex flex-col space-y-2">
                     <li>
-                        <Link legacyBehavior href="/enrollments">
-                            <a className="text-blue-500 hover:text-blue-600">Enrollments</a>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link legacyBehavior href="/courses" passHref>
+                        <Link legacyBehavior href="admin/courses" passHref>
                             <a className="text-blue-500 hover:text-blue-600">Courses</a>
                         </Link>
                     </li>
                     <li>
-                        <Link legacyBehavior href="/user-courses" passHref>
-                            <a className="text-blue-500 hover:text-blue-600">My Courses</a>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-blue-500 hover:text-blue-600" legacyBehavior href="/notifications" passHref>
-                            Notifications
+                        <Link legacyBehavior href="admin/accounts" passHref>
+                            <a className="text-blue-500 hover:text-blue-600">Accounts</a>
                         </Link>
                     </li>
                     <li>
@@ -77,18 +57,6 @@ const Homepage = () => {
                     </li>
                 </ul>
             </nav>
-
-            {showPopup && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-8 rounded shadow-lg">
-                        <h2 className="text-2xl font-semibold mb-4">Pop-up Content</h2>
-                        {/* Render pop-up data here */}
-                        <button onClick={() => setShowPopup(false)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

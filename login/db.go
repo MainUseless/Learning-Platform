@@ -35,7 +35,7 @@ func InitUsers(){
 		panic(err)
 	}
 	
-	InsertUserIfNotExist("Admin","Admin", string(hashedPassword), "Admin")
+	InsertUserIfNotExist("Admin","Admin@gmail.com", string(hashedPassword), "Admin")
 }
 
 func InsertUserIfNotExist(name string,email string, password string, role string) int {

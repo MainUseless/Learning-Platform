@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -38,7 +37,6 @@ func SignIn(ctx *fiber.Ctx) error {
 
 
 	user := GetUser(data["email"])
-	log.Println(data["email"])
 	password := GetPassword(data["email"])
 	if user.Id == -1 || password == "" {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Account not found"})
@@ -84,7 +82,6 @@ func SignUp(ctx *fiber.Ctx) error {
 	var user User
 	if err := ctx.BodyParser(&user)
 	err != nil {
-		log.Println(err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "error in parsing data",
 		})
