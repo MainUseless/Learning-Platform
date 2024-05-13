@@ -22,4 +22,7 @@ func SetupRoutes(app *fiber.App) {
 	}))
 
 	app.Get("/auth", Auth)
+	app.Get("/users", GetAccounts)
+	app.Put("/users", UpdateAccount)
+	app.Get("/user", GetAccount)
 }

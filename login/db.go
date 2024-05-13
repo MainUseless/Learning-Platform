@@ -22,7 +22,7 @@ func Connect(){
 func InitUsers(){
 	// Create a table
 
-	_, err := DB.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT NOT NULL , email TEXT NOT NULL UNIQUE,password TEXT NOT NULL, role TEXT NOT NULL, bio TEXT, affiliation TEXT, years_of_experience INTEGER)")
+	_, err := DB.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT NOT NULL , email TEXT NOT NULL UNIQUE,password TEXT NOT NULL, role TEXT NOT NULL, bio TEXT, affiliation TEXT, years_of_experience INTEGER, is_locked BOOLEAN DEFAULT FALSE)")
 	if err != nil {
 		panic(err)
 	}
@@ -39,16 +39,20 @@ func InitUsers(){
 }
 
 func InsertUserIfNotExist(name string,email string, password string, role string) int {
-	id,_,_,_,_,_,_ := GetUser(email)
-	if id != -1 {
-		return id
+	user := GetUser(email)
+	if user.Id != -1 {
+		return user.Id
 	}
-	return InsertUser(name,email, password, role,"","",0)
+	user.Name = name
+	user.Email = email
+	user.Password = password
+	user.Role = role
+	return InsertUser(user)
 }
 
-func InsertUser(name string, email string, password string, role string, bio string, affiliation string, yearsOfExperience int) int {
+func InsertUser(user User) int {
 
-	row, err := DB.Exec("INSERT INTO users (name ,email, password, role, bio, affiliation, years_of_experience) VALUES (?, ?, ?, ?, ?, ?, ?)", name, email, password, role, bio, affiliation, yearsOfExperience)
+	row, err := DB.Exec("INSERT INTO users (name ,email, password, role, bio, affiliation, years_of_experience) VALUES (?, ?, ?, ?, ?, ?, ?)", user.Name, user.Email, user.Password, user.Role, user.Bio, user.Affiliation, user.YearsOfExperience)
 
 	if err != nil {
 		return -1
@@ -63,18 +67,49 @@ func InsertUser(name string, email string, password string, role string, bio str
 	return int(ID)
 }
 
-func GetUser(email string) (int, string, string, string, string, string, int) {
-	var id int
-	var password string
-	var role string
-	var name string
-	var bio string
-	var affiliation string
-	var yearsOfExperience int
-	err := DB.QueryRow("SELECT id, name, password, role, bio, affiliation, years_of_experience  FROM users WHERE email = ?", email).Scan(&id, &name, &password, &role, &bio, &affiliation, &yearsOfExperience)
+func GetUser(email string) User {
+	var user User
+	err := DB.QueryRow("SELECT id, name, email, role, bio, affiliation, years_of_experience FROM users WHERE email = ?", email).Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience)
 	if err != nil {
-		// panic(err)
-		return -1, "", "","","","",0
+		return User{-1,"","","","","","",-1,false}
 	}
-	return id, name, password, role, bio, affiliation, yearsOfExperience
+	return user 
+}
+
+func GetPassword(email string) string {
+	var password string
+	err := DB.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&password)
+	if err != nil {
+		return ""
+	}
+	return password
+}
+
+func GetUsers() []User {
+	rows, err := DB.Query("SELECT id, name, email, role, bio, affiliation, years_of_experience FROM users")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	users := []User{}
+
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience)
+		if err != nil {
+			panic(err)
+		}
+		users = append(users, user)
+	}
+	return users
+}
+
+func UpdateUser(user User) bool {
+	query := "UPDATE users SET name = ?, email = ?, role = ?, bio = ?, affiliation = ?, years_of_experience = ? "
+	if user.Password != "" {
+		query += ", password = "+user.Password
+	}
+	_, err := DB.Exec(query+" WHERE id = ?", user.Name, user.Email, user.Role, user.Bio, user.Affiliation, user.YearsOfExperience, user.Id)
+	return err == nil
 }
