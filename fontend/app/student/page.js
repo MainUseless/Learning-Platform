@@ -10,7 +10,7 @@ const Homepage = () => {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [role, setRole] = useState('');
-    const [showPopup, setShowPopup] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
     const [popupData, setPopupData] = useState(null);
 
     useEffect(() => {
@@ -32,13 +32,17 @@ const Homepage = () => {
             router.push('/signin');
         }
         
-        fetch('https://example.com/api/getPopupData')
-            .then(response => response.json())
-            .then(data => {
-                setPopupData(data);
-                setShowPopup(true);
-            })
-            .catch(error => console.error('Error fetching pop-up data:', error));
+        fetch('http://localhost:8082/unreadnotification', {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        })
+        .then(response => response.text())
+        .then(data => {
+            setPopupData(data);
+            setShowPopup(true);
+        })
+        .catch(error => console.error('Error fetching pop-up data:', error));
     }, []);
 
     const handleLogout = () => {
@@ -53,12 +57,12 @@ const Homepage = () => {
             <nav className="mb-8">
                 <ul className="flex flex-col space-y-2">
                     <li>
-                        <Link legacyBehavior href="/enrollments">
+                        <Link legacyBehavior href="/student/enrollments">
                             <a className="text-blue-500 hover:text-blue-600">Enrollments</a>
                         </Link>
                     </li>
                     <li>
-                        <Link legacyBehavior href="/courses" passHref>
+                        <Link legacyBehavior href="/student/courses" passHref>
                             <a className="text-blue-500 hover:text-blue-600">Courses</a>
                         </Link>
                     </li>

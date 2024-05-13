@@ -35,6 +35,7 @@ const Signin = () => {
             if (res.ok) {
                 const data = await res.json();
                 const authToken = data.token;
+                console.log(authToken);
                 Cookies.set('authToken', authToken, { expires: 7 });
                 router.push('/student');
             } else {

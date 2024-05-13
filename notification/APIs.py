@@ -13,7 +13,7 @@ CORS(app)
 def add_notification():
 	data = request.get_json()
 	token_body = decode_token(request)
-	stud_id = token_body['stud_id']
+	stud_id = token_body['id']
 	message = data['message']
 
 	conn = sqlite3.connect('notification.db')
@@ -30,7 +30,7 @@ def add_notification():
 @app.route('/notifications', methods=['GET'])
 def get_unread_notifications():
 	token_body = decode_token(request)
-	stud_id = token_body['stud_id']
+	stud_id = token_body['id']
 	conn = sqlite3.connect('notification.db')
 	c = conn.cursor()
 
@@ -50,7 +50,7 @@ def get_unread_notifications():
 @app.route('/unreadnotification', methods=['GET'])
 def get_unread_notification_count():
     token_body = decode_token(request)
-    stud_id = token_body['stud_id']
+    stud_id = token_body['id']
     
     conn = sqlite3.connect('notification.db')
     c = conn.cursor()
