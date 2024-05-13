@@ -22,7 +22,8 @@ public class Auth {
 
     @AroundInvoke
     public Object validate(InvocationContext context){
-
+        
+    try {
         String authToken = httpHeaders.getHeaderString("Authorization");
         if(authToken == null){
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -38,10 +39,10 @@ public class Auth {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-    try {
         return context.proceed();
     } catch (Exception e) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        // return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Auth service is not reachable").build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()+"====================").build();
     } 
   }
 

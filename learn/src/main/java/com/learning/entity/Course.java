@@ -3,10 +3,9 @@ package com.learning.entity;
 
 import java.util.Set;
 
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
@@ -25,12 +24,13 @@ import lombok.NoArgsConstructor;
     @NamedQuery(name = "Course.findByStatus", query = "SELECT c FROM Course c WHERE c.status = :status"),
     @NamedQuery(name = "Course.findByCategory", query = "SELECT c FROM Course c WHERE c.category = :category AND c.status = 'APPEOVED'"),
     @NamedQuery(name = "Course.findById", query = "SELECT c FROM Course c WHERE c.id = :id"),
-    @NamedQuery(name = "Course.findByName", query = "SELECT c FROM Course c WHERE c.name like '%:name%' AND c.status = 'APPEOVED'"),
+    @NamedQuery(name = "Course.findByName", query = "SELECT c FROM Course c WHERE lower(c.name) like lower(concat('%',:name,'%')) AND c.status = 'APPEOVED'"),
     @NamedQuery(name = "Course.deleteById", query = "DELETE FROM Course c WHERE c.id = :id"),
     @NamedQuery(name = "Course.deleteByIdAndInstructorId", query = "DELETE FROM Course c WHERE c.id = :id AND c.instructorId = :instructorId"),
     @NamedQuery(name = "Course.updateStatus", query = "UPDATE Course c SET c.status = :status WHERE c.id = :id"),
+    @NamedQuery(name = "Course.getNameById", query = "SELECT c.name FROM Course c WHERE c.id = :id"),
 })
-public class Course {
+public class Course implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.AUTO)
     private int id;
@@ -56,7 +56,7 @@ public class Course {
     @Column(name = "instructor_id", nullable = false)
     private int instructorId;
 
-    @OneToMany(mappedBy="course")
+    @OneToMany(mappedBy="course" ,fetch = FetchType.EAGER) 
     private Set<Enrollment> enrollments;
 
 }
