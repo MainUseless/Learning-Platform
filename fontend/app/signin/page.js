@@ -1,41 +1,51 @@
 "use client";
 
-import { useState } from 'react';
+import {useState, useEffect } from 'react';
 import Link from 'next/link';
+import {jwtDecode} from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const Signin = () => {
-    // const [isLogin, setIsLogin] = useState(true);
+    const router = useRouter();
+    const [error, setError] = useState(null);
 
-    // const checkLogin = () => {
-    //     console.log('checking login')
-    //     if(document.cookie){
-    //         console.log('redirecting')
-    //         redirect('/')
-    //     }
-    // };
-
-    // checkLogin();
+    useEffect(() => {
+        const authToken = Cookies.get('authToken');
+        if(authToken){
+            const decodedToken = jwtDecode(authToken);
+            router.push('/'+decodedToken['role'].toLowerCase());
+        }
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        const res = await fetch('http://localhost:8081/signin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
+        try {
+            const res = await fetch('http://localhost:8081/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-        // if (res.status === 200) {
-        //     console.log('Login success');
-        //     redirect('/');
-        // } else {
-        //     console.log('Login failed');
-        // }
-    }
+            if (res.ok) {
+                const data = await res.json();
+                const authToken = data.token;
+                Cookies.set('authToken', authToken, { expires: 7 });
+                router.push('/student');
+            } else {
+                const errorMessage = await res.json();
+                setError(errorMessage.error);
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('An unexpected error occurred. Please try again later.');
+        }
+    };
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -74,11 +84,12 @@ const Signin = () => {
                     >
                         Login
                     </button>
+                    {error && <div className="text-red-500 mb-4">{error}</div>}
                 </form>
 
                 <p className="mt-4 text-center">
                     Don't have an account?
-                    <Link href="/register"
+                    <Link href="/signup"
                         className="text-blue-500 hover:text-blue-600 ml-1"
                     >
                         Register

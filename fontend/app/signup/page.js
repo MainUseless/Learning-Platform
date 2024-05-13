@@ -2,9 +2,11 @@
 
 import { useState,useEffect } from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const RegistrationForm = () => {
+    const router = useRouter();
     const [formState, setFormState] = useState({
         name: '',
         email: '',
@@ -12,24 +14,19 @@ const RegistrationForm = () => {
         affiliation: '',
         years_of_experience: '',
         bio: '',
-        role: 'STUDENT',
+        role: 'student',
     });
     const [errors, setErrors] = useState({});
     const [registrationError, setRegistrationError] = useState(null);
-    const [yearsOfExperience, setYearsOfExperience] = useState(null);
+    const [years_of_experience, setyears_of_experience] = useState(null);
 
-
-    // const checkLogin = () => {
-    //     console.log('checking login')
-    //     if(document.cookie){
-    //         console.log('redirecting')
-    //         redirect('/')
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     checkLogin();
-    // })
+    useEffect(() => {
+        const authToken = Cookies.get('authToken');
+        if(authToken){
+            const decodedToken = jwtDecode(authToken);
+            decodedToken['role'] == "student" ? router.push('/student') : decodedToken['role'] == "instructor" ? router.push('/instructorHome') : router.push('/adminHome');
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,6 +34,13 @@ const RegistrationForm = () => {
         ...formState,
         [name]: value,
         });
+
+        if (name === 'accountType') {
+            setFormState({
+                ...formState,
+                role: value === 'instructor' ? 'instructor' : 'student',
+            });
+        }
 
         if (errors[name]) {
         // Clear the error for this field if it changes
@@ -66,11 +70,11 @@ const RegistrationForm = () => {
         newErrors.affiliation = 'Affiliation is required';
         }
         if (
-        !formState.yearsOfExperience ||
-        isNaN(formState.yearsOfExperience) ||
-        Number(formState.yearsOfExperience) <= 0
+        !formState.years_of_experience ||
+        isNaN(formState.years_of_experience) ||
+        Number(formState.years_of_experience) <= 0
         ) {
-        newErrors.yearsOfExperience = 'Years of experience must be a positive number';
+        newErrors.years_of_experience = 'Years of experience must be a positive number';
         }
     
         if (!formState.bio) {
@@ -100,8 +104,7 @@ const RegistrationForm = () => {
                 throw new Error('Registration failed');
             }
 
-            // Redirect to the login page
-            redirect('/login');
+            router.push('/signin');
             
         } catch (error) {
             setRegistrationError(error.message);
@@ -192,22 +195,22 @@ const RegistrationForm = () => {
                     {errors.accountType && <div className="text-red-500 text-sm">{errors.accountType}</div>}
                 </div>
 
-                { formState.accountType === 'instructor' && (
+                { formState.role === 'instructor' && (
                     <div className="mb-4">
-                        <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="years_of_experience" className="block text-sm font-medium text-gray-700">
                         Years of Experience
                         </label>
                         <input
-                        id="yearsOfExperience"
-                        name="yearsOfExperience"
+                        id="years_of_experience"
+                        name="years_of_experience"
                         type="number"
                         min="0"
                         max="50"
-                        className={`mt-1 p-2 block w-full border rounded ${errors.yearsOfExperience ? 'border-red-500' : 'border-gray-300'}`}
-                        value={formState.yearsOfExperience}
+                        className={`mt-1 p-2 block w-full border rounded ${errors.years_of_experience ? 'border-red-500' : 'border-gray-300'}`}
+                        value={formState.years_of_experience}
                         onChange={handleChange}
                         />
-                        {errors.yearsOfExperience && <div className="text-red-500 text-sm">{errors.yearsOfExperience}</div>}
+                        {errors.years_of_experience && <div className="text-red-500 text-sm">{errors.years_of_experience}</div>}
                     </div>
                 )}
 
@@ -239,7 +242,7 @@ const RegistrationForm = () => {
 
         <p className="mt-4 text-center">
           Already have an account?
-          <Link href="/login" className="text-blue-500 hover:text-blue-600 ml-1">
+          <Link href="/signin" className="text-blue-500 hover:text-blue-600 ml-1">
             Login
           </Link>
         </p>
