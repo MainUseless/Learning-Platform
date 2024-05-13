@@ -5,11 +5,10 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 @Stateless
-@Path("/sample")
+@Path("/")
 public class Test {
 
 	@GET
-	@Path("/")
 	public String getString() {
 		return "test123123123";
 	}
