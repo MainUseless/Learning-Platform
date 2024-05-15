@@ -55,7 +55,7 @@ const Homepage = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link legacyBehavior href="/user-courses" passHref>
+                        <Link legacyBehavior href="/instructor/manageEnrollments" passHref>
                             <a className="text-blue-500 hover:text-blue-600">Manage Enrollments</a>
                         </Link>
                     </li>
