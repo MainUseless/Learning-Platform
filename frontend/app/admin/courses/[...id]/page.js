@@ -18,6 +18,11 @@ export default function Page() {
         },
       body: JSON.stringify(course),
     });
+    if(response.ok)
+      alert('Course updated successfully');
+    else
+      alert('Error updating course');
+    router.back();
   }
 
   const handleDelete = async () => {
@@ -28,6 +33,10 @@ export default function Page() {
         'Authorization': 'Bearer ' + Cookies.get('authToken')
       }
     });
+    if(response.ok)
+      alert('Course deleted successfully');
+    else
+      alert('Error deleting course');
     router.back();
   }
   return (

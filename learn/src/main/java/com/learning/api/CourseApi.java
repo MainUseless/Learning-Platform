@@ -132,22 +132,54 @@ public class CourseApi {
 
         String role = jwt.get("role");
 
-        course.setStatus(course.getStatus().toUpperCase());
-        
+        if(course.getId() == 0){
+            return Response.status(Response.Status.BAD_REQUEST).entity("course_id is required").build();
+        }
+
+        Course oldCourse = em.find(Course.class, course.getId());
+
+        if(oldCourse == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
         if(role.toUpperCase().equals("ADMIN")){
-            if(!course.getStatus().equals("APPROVED") && !course.getStatus().equals("REJECTED")){
+            if(course.getStatus()!=null&&!course.getStatus().equals("APPROVED") && !course.getStatus().equals("REJECTED")){
                 return Response.status(Response.Status.BAD_REQUEST).entity("status should be either APPROVED or REJECTED").build();
             }
-            em.merge(course);
+            if(course.getStatus()!=null)
+                course.setStatus(course.getStatus().toUpperCase());
+            updateCourse(oldCourse, course);
+            em.merge(oldCourse);
             return Response.status(Response.Status.ACCEPTED).build();
-        }else{
+        }else if(role.toUpperCase().equals("INSTRUCTOR")){
+            course.setStatus(null);
+            updateCourse(oldCourse, course);
+            em.merge(oldCourse);
+            return Response.status(Response.Status.ACCEPTED).build();
+        }
+        else{
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
+    private void updateCourse(Course c1, Course c2){
+        if(c2.getName()!=null)
+            c1.setName(c2.getName());
+        if(c2.getCategory()!=null)
+            c1.setCategory(c2.getCategory());
+        if(c2.getContent()!=null)
+            c1.setContent(c2.getContent());
+        if(c2.getStatus()!=null)
+            c1.setStatus(c2.getStatus());
+        if(c2.getCapacity()!=0)
+            c1.setCapacity(c2.getCapacity());
+        if(c2.getDuration()!=0)
+            c1.setDuration(c2.getDuration());
+    }
+
     @DELETE
-    @Path("/{course_id}")
-    public Response deleteCourse(@PathParam("course_id") int course_id){
+    @Path("/")
+    public Response deleteCourse(@QueryParam("course_id") int course_id){
         // Access headers from the context
         String authToken = headers.getRequestHeaders().getFirst("Authorization");
         // Get the Authorization header
