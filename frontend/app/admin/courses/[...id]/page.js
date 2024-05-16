@@ -7,7 +7,7 @@ import Cookies from 'js-cookie'; // Import the js-cookie library
 export default function Page() {
   const router = useRouter()
   
-  const [course, setCourse] = useState(JSON.parse(localStorage.getItem('courseData')));
+  const [course, setCourse] = useState(JSON.parse(localStorage.getItem('data')));
 
   const handleSave = async () => {
     const response = await fetch(process.env.NEXT_PUBLIC_LEARN_API_URL + '/course/', {
@@ -26,10 +26,9 @@ export default function Page() {
   }
 
   const handleDelete = async () => {
-    const response = await fetch(process.env.NEXT_PUBLIC_LEARN_API_URL + '/course/' + course.id, {
+    const response = await fetch(process.env.NEXT_PUBLIC_LEARN_API_URL + '/course?course_id='+course.id, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application',
         'Authorization': 'Bearer ' + Cookies.get('authToken')
       }
     });

@@ -9,7 +9,8 @@ import lombok.Data;
 @NamedQueries({
     // @NamedQuery(name = "Enrollment.findAllWithCourseNameByStudentId", query = "SELECT e,c FROM Enrollment e where e.student_id = :student_id JOIN Course c ON e.course_id = c.id"),
     @NamedQuery(name = "Enrollment.findByStudentId", query = "SELECT e FROM Enrollment e WHERE e.id = :id"),
-    @NamedQuery(name = "Enrollment.findByCourseId", query = "SELECT e FROM Enrollment e WHERE e.course = :course"),
+    @NamedQuery(name = "Enrollment.findByCourseId", query = "SELECT e FROM Enrollment e WHERE e.course.id = :course"),
+    @NamedQuery(name = "Enrollment.findByInstructorId", query = "SELECT e FROM Enrollment e WHERE e.status='PENDING' e.course.instructorId = :instructor_id"),
     @NamedQuery(name = "Enrollment.findByStatus", query = "SELECT e FROM Enrollment e WHERE e.Status = :Status"),
     @NamedQuery(name = "Enrollment.findByRating", query = "SELECT e FROM Enrollment e WHERE e.rating = :rating"),
     @NamedQuery(name = "Enrollment.findByCourseIdAndStudentId", query = "Select e FROM Enrollment e WHERE e.course.id = :course_id AND e.id = :id"),

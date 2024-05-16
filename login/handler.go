@@ -129,6 +129,13 @@ func Auth(ctx *fiber.Ctx) error{
 }
 
 func GetAccounts(ctx *fiber.Ctx) error {
+	claims := ctx.Locals("user").(*jwt.Token).Claims.(jwt.MapClaims)
+	role := claims["role"].(string)
+
+	if strings.ToUpper(role) != "ADMIN" {
+		return ctx.SendStatus(fiber.StatusUnauthorized)
+	}
+
 	users := GetUsers()
 	return ctx.Status(fiber.StatusOK).JSON(users)
 }
@@ -145,6 +152,7 @@ func UpdateAccount(ctx *fiber.Ctx) error{
 	if err := ctx.BodyParser(&user); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Error in parsing data",
+			"message": err.Error(),
 		})
 	}
 
@@ -182,13 +190,13 @@ func UpdateAccount(ctx *fiber.Ctx) error{
 }
 
 func GetAccount(ctx *fiber.Ctx) error {
-	email := ctx.Query("email")
+	id := ctx.Query("id")
 
-	if email == "" {
+	if id == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Missing email"})
 	}
 
-	user := GetUser(email)
+	user := GetUserById(id)
 
 	if strings.ToLower(user.Role) == "admin" {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})

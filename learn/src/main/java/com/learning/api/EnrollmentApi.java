@@ -17,11 +17,13 @@ import jakarta.jms.Queue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -39,6 +41,8 @@ import jakarta.ws.rs.core.HttpHeaders;
     }
 )
 @Interceptors(Auth.class)
+@Produces("application/json")
+@Consumes("application/json")
 public class EnrollmentApi {
 
     @Resource(lookup = "java:/queue/CourseRegistrationQueue")
@@ -64,19 +68,23 @@ public class EnrollmentApi {
             Map<String,String> jwt = JwtParser.parse(authToken);
             
             if(jwt == null){
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("lmao").build();
             }
             
-            String id = jwt.get("id");
+            int id = Integer.parseInt(jwt.get("id"));
             String role = jwt.get("role");
 
-            if(!role.toUpperCase().equals("STUDENT")){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("Only students can view enrollments").build();
+            if(role.toUpperCase().equals("STUDENT")){
+                return Response.status(Response.Status.OK).entity(em.createNamedQuery("Enrollment.findByStudentId", Enrollment.class).setParameter("id", id).getResultList()).build();
             }
-    
-            return Response.ok(em.createNamedQuery("Enrollment.findAllWithCourseNameByStudentId", Enrollment.class).setParameter("student_id", id).getResultList()).build();
+            else if(role.toUpperCase().equals("INSTRUCTOR")){
+                return Response.ok(em.createNamedQuery("Enrollment.findByInstructorId", Enrollment.class).setParameter("instructor_id", id).getResultList()).build();
+            }
+            
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Only students can view enrollments").build();
+            
         }catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
         
     }

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie'; // Import the js-cookie library
-import Course from '../../../public/components/Course';
+import Card from '../../../public/components/Card';
 
 const Courses = () => {
     const router = useRouter();
@@ -49,13 +49,13 @@ const Courses = () => {
                     <div class="developer flex-grow-1">
                         <h1 className="text-2xl font-semibold mb-4">Approved Courses</h1>
                         {approvedCourses.map(course => (
-                            <Course key={course.id} course={course} path={'/admin/courses/'} />
+                            <Card key={course.id} data={course} path={'/admin/courses/'} />
                         ))}
                     </div>
                     <div class="developer flex-grow-1"> 
                         <h1 className="text-2xl font-semibold mb-4">Pending Courses</h1>
                         {pendingCourses.map(course => (
-                            <Course key={course.id} course={course} path={'/admin/courses/'} />
+                            <Card key={course.id} data={course} path={'/admin/courses/'} />
                         ))}
                     </div>
                 </div>

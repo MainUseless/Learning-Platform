@@ -2,6 +2,7 @@
 
 import { useState,useEffect } from 'react';
 import Link from 'next/link';
+import {jwtDecode} from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
@@ -24,7 +25,7 @@ const RegistrationForm = () => {
         const authToken = Cookies.get('authToken');
         if(authToken){
             const decodedToken = jwtDecode(authToken);
-            decodedToken['role'] == "student" ? router.push('/student') : decodedToken['role'] == "instructor" ? router.push('/instructorHome') : router.push('/adminHome');
+            decodedToken['role'] == "student" ? router.push('/student') : decodedToken['role'] == "instructor" ? router.push('/instructor') : router.push('/admin');
         }
     }, []);
 

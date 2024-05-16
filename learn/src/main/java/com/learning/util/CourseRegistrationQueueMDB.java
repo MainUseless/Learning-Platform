@@ -1,6 +1,7 @@
 
 package com.learning.util;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import jakarta.ejb.ActivationConfigProperty;
 import jakarta.ejb.MessageDriven;
@@ -32,7 +33,21 @@ public class CourseRegistrationQueueMDB implements MessageListener {
         try {
             if (rcvMessage instanceof TextMessage) {
                 msg = (TextMessage) rcvMessage;
-                LOGGER.info("Received Message from queue: " + msg.getText());
+                String[] message = msg.getText().split(":");
+                
+                switch (message[0]) {
+                    case "ENROLL":
+                        LOGGER.info("Enrolling student " + message[1] + " to course " + message[2]);
+                        break;
+                    case "UNENROLL":
+                        LOGGER.info("Unenrolling student " + message[1] + " from course " + message[2]);
+                        break;
+                    case "UPDATE":
+                        LOGGER.info("Updating course " + message[1]);
+                        break;
+                    default:
+                        break;
+                }
             } else {
                 LOGGER.warning("Message of wrong type: " + rcvMessage.getClass().getName());
             }

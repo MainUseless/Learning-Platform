@@ -69,12 +69,24 @@ func InsertUser(user User) int {
 
 func GetUser(email string) User {
 	var user User
-	err := DB.QueryRow("SELECT id, name, email, role, bio, affiliation, years_of_experience FROM users WHERE email = ?", email).Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience)
+	err := DB.QueryRow("SELECT id, name, email, role, bio, affiliation, years_of_experience, is_locked FROM users WHERE email = ?", email).Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience, &user.IsLocked)
 	if err != nil {
 		return User{-1,"","","","","","",-1,false}
 	}
 	return user 
 }
+
+
+func GetUserById(id string) User {
+	var user User
+	err := DB.QueryRow("SELECT id, name, email, role, bio, affiliation, years_of_experience, is_locked FROM users WHERE id = ?", id).Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience, &user.IsLocked)
+	if err != nil {
+		return User{-1,"","","","","","",-1,false}
+	}
+	return user 
+
+}
+
 
 func GetPassword(email string) string {
 	var password string
@@ -86,7 +98,7 @@ func GetPassword(email string) string {
 }
 
 func GetUsers() []User {
-	rows, err := DB.Query("SELECT id, name, email, role, bio, affiliation, years_of_experience FROM users")
+	rows, err := DB.Query("SELECT id, name, email, role, bio, affiliation, years_of_experience, is_locked FROM users")
 	if err != nil {
 		panic(err)
 	}
@@ -96,7 +108,7 @@ func GetUsers() []User {
 
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience)
+		err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.Bio, &user.Affiliation, &user.YearsOfExperience, &user.IsLocked)
 		if err != nil {
 			panic(err)
 		}
@@ -106,10 +118,10 @@ func GetUsers() []User {
 }
 
 func UpdateUser(user User) bool {
-	query := "UPDATE users SET name = ?, email = ?, role = ?, bio = ?, affiliation = ?, years_of_experience = ? "
+	query := "UPDATE users SET name = ?, email = ?, role = ?, bio = ?, affiliation = ?, years_of_experience = ?, is_locked = ?"
 	if user.Password != "" {
 		query += ", password = "+user.Password
 	}
-	_, err := DB.Exec(query+" WHERE id = ?", user.Name, user.Email, user.Role, user.Bio, user.Affiliation, user.YearsOfExperience, user.Id)
+	_, err := DB.Exec(query+" WHERE id = ?", user.Name, user.Email, user.Role, user.Bio, user.Affiliation, user.YearsOfExperience, user.IsLocked, user.Id)
 	return err == nil
 }

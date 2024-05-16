@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Course from '../../../public/components/Course';
+import Card from '../../../public/components/Card';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 

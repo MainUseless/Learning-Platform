@@ -19,7 +19,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
@@ -143,8 +142,8 @@ public class CourseApi {
         }
 
         if(role.toUpperCase().equals("ADMIN")){
-            if(course.getStatus()!=null&&!course.getStatus().equals("APPROVED") && !course.getStatus().equals("REJECTED")){
-                return Response.status(Response.Status.BAD_REQUEST).entity("status should be either APPROVED or REJECTED").build();
+            if(course.getStatus()!=null&&!course.getStatus().equals("APPROVED") && !course.getStatus().equals("PENDING")){
+                return Response.status(Response.Status.BAD_REQUEST).entity("status should be either APPROVED or PENDING").build();
             }
             if(course.getStatus()!=null)
                 course.setStatus(course.getStatus().toUpperCase());
