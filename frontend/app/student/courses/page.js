@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Course from '../../../public/components/Course';
+import Card from '../../../public/components/Card';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
@@ -22,7 +22,6 @@ const Courses = () => {
         // Fetch courses from the backend when the component mounts
         fetchCourses();
     }, []);
-
     const fetchCourses = async () => {
         const authToken = Cookies.get('authToken');
         try {
@@ -40,22 +39,36 @@ const Courses = () => {
         } catch (error) {
             console.error('Error fetching courses:', error);
         }
-    };
+    }
 
-    const handleSearch = () => {
+    const handleEnroll = async (event) => {
+        try {
+            const authToken = Cookies.get('authToken');
+            const courseId = Number(event.target.id);
+            const response = await fetch(`http://localhost:8080/learn/enrollment?course_id=${courseId}`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to enroll in the course');
+            }
+
+        } catch (error) {
+            console.error('Error enrolling in the course:', error);
+        }
+    }
+
+    const handleSearch = async () => {
         let filtered = courses.filter(course => {
             if (searchOption === 'name') {
-                return course.name.toLowerCase().includes(searchTerm.toLowerCase());
+                return course[0].name.toLowerCase().includes(searchTerm.toLowerCase());
             } else if (searchOption === 'category') {
-                return course.category.toLowerCase().includes(searchTerm.toLowerCase());
+                return course[0].category.toLowerCase().includes(searchTerm.toLowerCase());
             }
             return false;
         });
-
-        if (sortByRatings) {
-            filtered.sort((a, b) => b.rating - a.rating);
-        }
-
         setFilteredCourses(filtered);
     };
 
@@ -88,29 +101,26 @@ const Courses = () => {
                         <option value="category">Category</option>
                     </select>
 
+                    <div className="mr-4"></div> {/* Add space between checkboxes */}
                     <button
                         className="mr-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
                         onClick={handleSearch}
                     >
                         Search
                     </button>
-
-                    <label className="flex items-center">
-                        <input
-                            type="checkbox"
-                            className="mr-2"
-                            checked={sortByRatings}
-                            onChange={e => setSortByRatings(e.target.checked)}
-                        />
-                        Sort by Ratings
-                    </label>
                 </div>
 
                 <div className="w-full">
                     <ul>
-                        {filteredCourses.map(course => (
-                            <li key={course.id} className="bg-white p-4 rounded shadow mb-4">
-                                <Course key={course.id} course={course} />
+                        {
+                        filteredCourses &&
+                        filteredCourses.map(course => (
+                            <li className="bg-white p-4 rounded shadow mb-4">
+                                <div>
+                                    <Card data={course[0]}  />
+                                    <p>rating : {course[1] == null ? 0 : course[1]} </p>
+                                    <button className="bg-blue-500 hover:bg-blue-600 text-blue py-2 px-4 rounded" id={course[0].id} onClick={(event) => handleEnroll(event)}>Enroll</button>
+                                </div>
                             </li>
                         ))}
                     </ul>

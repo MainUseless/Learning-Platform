@@ -12,6 +12,10 @@ const Homepage = () => {
     const [role, setRole] = useState('');
 
     useEffect(() => {
+        checkLogin();
+    }, []);
+
+    const checkLogin = () => {
         const authToken = Cookies.get('authToken');
 
         if (authToken) {
@@ -27,10 +31,8 @@ const Homepage = () => {
         else{
             router.push('/signin');
         }
-    }, []);
-
+    }
     
-
     const handleLogout = () => {
         Cookies.remove('authToken');
         router.push('/signin');

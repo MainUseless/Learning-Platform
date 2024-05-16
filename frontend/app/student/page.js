@@ -24,6 +24,7 @@ const Homepage = () => {
                     router.push('/'+decodedToken['role'].toLowerCase()) 
                 }
                 setRole(decodedToken['role']);
+                handleShowPopup();
             } catch (error) {
                 console.error('Error decoding auth token:', error);
             }
@@ -32,18 +33,22 @@ const Homepage = () => {
             router.push('/signin');
         }
         
+        
+    }, []);
+
+    const handleShowPopup = () => {
         fetch('http://localhost:8082/unreadnotification', {
             headers: {
-                Authorization: `Bearer ${authToken}`,
+                Authorization: `Bearer ${Cookies.get('authToken')}`,
             },
         })
         .then(response => response.text())
         .then(data => {
             setPopupData(data);
-            setShowPopup(true);
+            // setShowPopup(true);
         })
         .catch(error => console.error('Error fetching pop-up data:', error));
-    }, []);
+    }
 
     const handleLogout = () => {
         Cookies.remove('authToken');
@@ -77,17 +82,17 @@ const Homepage = () => {
                 </ul>
             </nav>
 
-            {showPopup && (
+            <p>{popupData}</p>
+            {/* {showPopup && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-8 rounded shadow-lg">
                         <h2 className="text-2xl font-semibold mb-4">Pop-up Content</h2>
-                        {/* Render pop-up data here */}
                         <button onClick={() => setShowPopup(false)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
                             Close
                         </button>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

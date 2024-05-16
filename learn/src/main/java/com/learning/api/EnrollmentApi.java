@@ -91,7 +91,7 @@ public class EnrollmentApi {
 
     @POST
     @Path("/")
-    public Response enrollCourse(@QueryParam("course_id") String courseId){
+    public Response enrollCourse(@QueryParam("course_id") int courseId){
         try{
             jmsContext.createProducer().send(queue, "ENROLL"+":"+headers.getRequestHeaders().getFirst("Authorization")+":"+courseId);
             return Response.status(Response.Status.ACCEPTED).build();
@@ -102,7 +102,7 @@ public class EnrollmentApi {
 
     @DELETE
     @Path("/")
-    public Response dropCourse(@QueryParam("course_id") String courseId) {
+    public Response dropCourse(@QueryParam("course_id") int courseId) {
         try{
             jmsContext.createProducer().send(queue, "UNENROLL"+":"+headers.getRequestHeaders().getFirst("Authorization")+":"+courseId);
             return Response.status(Response.Status.ACCEPTED).build();
@@ -113,9 +113,9 @@ public class EnrollmentApi {
 
     @PUT
     @Path("/")
-    public Response updateEnrollment(@QueryParam("course_id") String courseId,@QueryParam("status") String status){
+    public Response updateEnrollment(@QueryParam("student_id") int studentId,@QueryParam("course_id") int courseId,@QueryParam("status") String status){
         try{
-            jmsContext.createProducer().send(queue, "UPDATE"+":"+headers.getRequestHeaders().getFirst("Authorization")+":"+courseId+":"+status);
+            jmsContext.createProducer().send(queue, "UPDATE"+":"+headers.getRequestHeaders().getFirst("Authorization")+":"+studentId+":"+courseId+":"+status);
             return Response.status(Response.Status.ACCEPTED).build();
         }catch(Exception e){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

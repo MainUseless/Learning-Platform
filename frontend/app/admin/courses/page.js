@@ -48,14 +48,20 @@ const Courses = () => {
                 <div class="container flex flex-row space-x-7">
                     <div class="developer flex-grow-1">
                         <h1 className="text-2xl font-semibold mb-4">Approved Courses</h1>
-                        {approvedCourses.map(course => (
-                            <Card key={course.id} data={course} path={'/admin/courses/'} />
+                        {approvedCourses && approvedCourses.map(course => (
+                            <p>
+                                <Card data={course[0]} path={'/admin/courses/'} />
+                                <p>rating : {course[1] == null ? 0 : course[1]} </p>
+                            </p>
                         ))}
                     </div>
                     <div class="developer flex-grow-1"> 
                         <h1 className="text-2xl font-semibold mb-4">Pending Courses</h1>
-                        {pendingCourses.map(course => (
-                            <Card key={course.id} data={course} path={'/admin/courses/'} />
+                        {pendingCourses && pendingCourses.map(course => (
+                            <p>
+                                <Card data={course[0]} path={'/admin/courses/'} />
+                                <p>rating : {course[1] == null ? 0 : course[1]} </p>
+                            </p>
                         ))}
                     </div>
                 </div>

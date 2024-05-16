@@ -12,6 +12,7 @@ const Courses = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchOption, setSearchOption] = useState('name');
     const [sortByRatings, setSortByRatings] = useState(false);
+    const [myCourses, setMyCourses] = useState(false);
     const [filteredCourses, setFilteredCourses] = useState([]);
 
     useEffect(() => {
@@ -42,18 +43,33 @@ const Courses = () => {
         }
     };
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         let filtered = courses.filter(course => {
             if (searchOption === 'name') {
-                return course.name.toLowerCase().includes(searchTerm.toLowerCase());
+                return course[0].name.toLowerCase().includes(searchTerm.toLowerCase());
             } else if (searchOption === 'category') {
-                return course.category.toLowerCase().includes(searchTerm.toLowerCase());
+                return course[0].category.toLowerCase().includes(searchTerm.toLowerCase());
             }
             return false;
         });
 
-        if (sortByRatings) {
-            filtered.sort((a, b) => b.rating - a.rating);
+        if (myCourses){
+            try {
+                const authToken = Cookies.get('authToken');
+                const response = await fetch('http://localhost:8080/learn/course?mine=true', {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch courses');
+                }
+                const data = await response.json();
+                setCourses(data);
+                setFilteredCourses(data);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            }
         }
 
         setFilteredCourses(filtered);
@@ -87,30 +103,35 @@ const Courses = () => {
                         <option value="name">Name</option>
                         <option value="category">Category</option>
                     </select>
-
+                    <div className="mr-4"></div> {/* Add space between checkboxes */}
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            className="mr-2"
+                            checked={myCourses}
+                            onChange={e => setMyCourses(e.target.checked)}
+                        />
+                        My Courses
+                    </label>
+                    <div className="mr-4"></div> {/* Add space between checkboxes */}
                     <button
                         className="mr-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
                         onClick={handleSearch}
                     >
                         Search
                     </button>
-
-                    <label className="flex items-center">
-                        <input
-                            type="checkbox"
-                            className="mr-2"
-                            checked={sortByRatings}
-                            onChange={e => setSortByRatings(e.target.checked)}
-                        />
-                        Sort by Ratings
-                    </label>
                 </div>
 
                 <div className="w-full">
                     <ul>
-                        {filteredCourses.map(course => (
-                            <li key={course.id} className="bg-white p-4 rounded shadow mb-4">
-                                <Course key={course.id} course={course} />
+                        {
+                        filteredCourses &&
+                        filteredCourses.map(course => (
+                            <li className="bg-white p-4 rounded shadow mb-4">
+                                <p>
+                                    <Card data={course[0]} />
+                                    <p>rating : {course[1] == null ? 0 : course[1]} </p>
+                                </p>
                             </li>
                         ))}
                     </ul>

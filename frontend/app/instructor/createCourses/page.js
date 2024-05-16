@@ -9,7 +9,7 @@ export default function Page() {
   const router = useRouter()
   
   const [course, setCourse] = useState(JSON.parse(localStorage.getItem('courseData')));
-
+  console.log(process.env.NEXT_PUBLIC_LEARN_API_URL);
   const handleSubmit = async () => {
     const response = await fetch(process.env.NEXT_PUBLIC_LEARN_API_URL + '/course/', {
       method: 'POST',
@@ -19,6 +19,12 @@ export default function Page() {
         },
       body: JSON.stringify(course),
     });
+
+    if(!response.ok) {
+      console.error('Network response was not ok', response.status, response.statusText);
+      return;
+    }
+
     router.back();
   }
 

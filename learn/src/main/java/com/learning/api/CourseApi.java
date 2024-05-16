@@ -2,6 +2,8 @@ package com.learning.api;
 
 import java.util.Map;
 
+import org.javatuples.Pair;
+
 import com.learning.entity.Course;
 import com.learning.util.Auth;
 import com.learning.util.JwtParser;
@@ -66,20 +68,23 @@ public class CourseApi {
     
             if(role.toUpperCase().equals("ADMIN")){
                 if(status!=null){
-                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findByStatus", Course.class).setParameter("status", status).getResultList()).build();
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByStatusAndRating").setParameter("status", status).getResultList()).build();
                 }
-                return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findAll", Course.class).getResultList()).build();
+                if(name!=null){
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByNameAndRating").setParameter("name", name).getResultList()).build();
+                }
+                return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getAll").getResultList()).build();
             }else if(role.toUpperCase().equals("INSTRUCTOR") && mine){
                     String id = jwt.get("id");
-                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findByInstructorId", Course.class).setParameter("instructorId", Integer.parseInt(id)).getResultList()).build();
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByInstructorIdAndRating").setParameter("instructorId", Integer.parseInt(id)).getResultList()).build();
             }else{
                 if(name!=null){
-                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findByName", Course.class).setParameter("name", name).getResultList()).build();
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByNameAndRating").setParameter("name", name).getResultList()).build();
                 }else if(category!=null){
-                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findByCategory", Course.class).setParameter("category", category).getResultList()).build();
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByCategoryAndRating").setParameter("category", category).getResultList()).build();
                 }
                 else{
-                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.findByStatus", Course.class).setParameter("status", "APPROVED").getResultList()).build();
+                    return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByStatusAndRating").setParameter("status", "APPROVED").getResultList()).build();
                 }
             }
         }catch(Exception e){

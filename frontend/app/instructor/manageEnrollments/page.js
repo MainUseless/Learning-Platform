@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import Card from '../../../public/components/Card';
 
 const ManageEnrollments = () => {
     const router = useRouter();
@@ -16,7 +17,6 @@ const ManageEnrollments = () => {
         if (!authToken)
             router.push('/signin');
         else {
-            // Fetch student enrollments
             fetch('http://localhost:8080/learn/enrollment', {
                 headers: {
                     Authorization: `Bearer ${authToken}`
@@ -29,22 +29,16 @@ const ManageEnrollments = () => {
                 return response.json();
             })
             .then(enrollmentsData => {
-                setEnrollments(enrollmentsData);
-                enrollmentsData.forEach(enrollment => {
-                    fetchStudentName(authToken, enrollment.student_id)
-                        .then(studentName => {
-                            const updatedEnrollments = enrollments.map(enrollmentItem => {
-                                if (enrollmentItem.id === enrollment.id) {
-                                    return { ...enrollmentItem, studentName };
-                                }
-                                return enrollmentItem;
-                            });
-                            setEnrollments(updatedEnrollments);
-                        })
-                        .catch(error => {
-                            console.error('Error fetching student name:', error);
+                Promise.all(enrollmentsData.map(enrollment => fetchStudentName(authToken, enrollment.id)))
+                    .then(studentNames => {
+                        const updatedEnrollments = enrollmentsData.map((enrollment, index) => {
+                            return { ...enrollment, studentName: studentNames[index] };
                         });
-                });
+                        setEnrollments(updatedEnrollments);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching student names:', error);
+                    });
             })
             .catch(error => {
                 console.error('Error fetching student enrollments:', error);
@@ -65,18 +59,18 @@ const ManageEnrollments = () => {
         return userData.name;
     };
 
-    const handleAccept = (courseId) => {
-        updateEnrollmentStatus(courseId, 'ACCEPTED');
+    const handleAccept = (studentId,courseId) => {
+        updateEnrollmentStatus(studentId,courseId, 'ACCEPTED');
     };
     
-    const handleReject = (courseId) => {
-        updateEnrollmentStatus(courseId, 'REJECTED');
+    const handleReject = (studentId,courseId) => {
+        updateEnrollmentStatus(studentId,courseId, 'REJECTED');
     };
 
-    const updateEnrollmentStatus = (courseId, status) => {
+    const updateEnrollmentStatus = (studentid,courseId, status) => {
         const authToken = Cookies.get('authToken');
         
-        fetch(`http://localhost:8080/learn/enrollment/updateEnrollment?course_id=${courseId}&status=${status}`, {
+        fetch(`http://localhost:8080/learn/enrollment?student_id=${studentid}&course_id=${courseId}&status=${status}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -100,7 +94,7 @@ const ManageEnrollments = () => {
             <ul>
                 {enrollments.map(enrollment => (
                     <li key={enrollment.id}>
-                        <p>{enrollment.studentName ? enrollment.studentName : "Loading..."} - {enrollment.courseName}</p>
+                        <p>{enrollment.studentName ? enrollment.studentName : "Loading..."} - {enrollment.name}</p>
                         <button onClick={() => setSelectedEnrollment(enrollment)}>View Details</button>
                     </li>
                 ))}
@@ -108,11 +102,11 @@ const ManageEnrollments = () => {
 
             {selectedEnrollment && (
                 <div>
-                    <h2>Enrollment Details</h2>
+                    <h2>Enrollment Details:</h2>
                     <p>Student: {selectedEnrollment.studentName ? selectedEnrollment.studentName : "Loading..."}</p>
-                    <p>Course: {selectedEnrollment.courseName}</p>
-                    <button onClick={() => handleAccept(selectedEnrollment.course_id)}>Accept</button>
-                    <button onClick={() => handleReject(selectedEnrollment.course_id)}>Reject</button>
+                    <p>Course: {selectedEnrollment.course.name}</p>
+                    <button className="bg-blue-500 hover:bg-blue-600 text-blue py-2 px-4 rounded" onClick={() => handleAccept(selectedEnrollment.id,selectedEnrollment.course.id)}>Accept</button>
+                    <button className="bg-blue-500 hover:bg-blue-600 text-blue py-2 px-4 rounded" onClick={() => handleReject(selectedEnrollment.id,selectedEnrollment.course.id)}>Reject</button>
                 </div>
             )}
 

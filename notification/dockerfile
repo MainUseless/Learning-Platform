@@ -2,7 +2,7 @@ FROM rapidfort/flaskapp:latest
 RUN mkdir /NotificationService && pip install flask_cors pyjwt requests
 # COPY ./APIs.py ./DB.py /NotificationService/
 WORKDIR /NotificationService
-ENV AUTH_URL=http://localhost:8081/auth
+ENV AUTH_URL=http://go-login:8081/auth
 EXPOSE 8082
 # CMD ["python", "APIs.py"]
 RUN echo "while true; do sleep 1000; done" > /test.sh

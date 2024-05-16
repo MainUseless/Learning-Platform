@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
@@ -8,28 +8,39 @@ import Cookies from 'js-cookie';
 const Notifications = () => {
     const router = useRouter();
     const [notifications, setNotifications] = useState([]);
+    const initialized = useRef(false);
 
     useEffect(() => {
         const authToken = Cookies.get('authToken');
-    
+        if (!initialized.current) {
+            initialized.current = true
+            fetchNotifications();
+            console.log('i fire once');
+            
+          }
         if(!authToken)
             router.push('/signin');
-        // Fetch notifications from the backend when the component mounts
-        fetchNotifications();
-    }, []);
 
+    }, []);
+    
     const fetchNotifications = async () => {
         try {
-            const response = await fetch('https://example.com/api/notifications');
+            const response = await fetch('http://localhost:8082/notifications',{
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('authToken')}`,
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch notifications');
             }
             const data = await response.json();
-            setNotifications(data);
+            console.log(data);
+            setNotifications(data.reverse());
         } catch (error) {
             console.error('Error fetching notifications:', error);
         }
     };
+
 
     return (
         <div className="flex flex-col items-center justify-top min-h-screen bg-gray-100 text-black">
@@ -44,7 +55,7 @@ const Notifications = () => {
                 <div className="w-full">
                     <ul>
                         {notifications.map(notification => (
-                            <li key={notification.id} className="bg-white p-4 rounded shadow mb-4">
+                            <li key={notification.id} className={notification.is_read==1 ? "bg-white p-4 rounded shadow mb-4" : "bg-red-500 p-4 rounded shadow mb-4" }>
                                 <p>{notification.message}</p>
                             </li>
                         ))}
