@@ -55,6 +55,11 @@ const Homepage = () => {
                         </Link>
                     </li>
                     <li>
+                        <Link legacyBehavior href="admin/statistics" passHref>
+                            <a className="text-blue-500 hover:text-blue-600">Statistics</a>
+                        </Link>
+                    </li>
+                    <li>
                         <button onClick={handleLogout} className="text-blue-500 hover:text-blue-600">Logout</button>
                     </li>
                 </ul>

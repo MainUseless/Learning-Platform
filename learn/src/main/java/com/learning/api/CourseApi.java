@@ -73,7 +73,7 @@ public class CourseApi {
                 if(name!=null){
                     return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByNameAndRating").setParameter("name", name).getResultList()).build();
                 }
-                return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getAll").getResultList()).build();
+                return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getCourseRatingAndEnrollmentCount").getResultList()).build();
             }else if(role.toUpperCase().equals("INSTRUCTOR") && mine){
                     String id = jwt.get("id");
                     return Response.status(Response.Status.OK).entity(em.createNamedQuery("Course.getByInstructorIdAndRating").setParameter("instructorId", Integer.parseInt(id)).getResultList()).build();

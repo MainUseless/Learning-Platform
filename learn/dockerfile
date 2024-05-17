@@ -3,7 +3,9 @@ USER root
 RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
 RUN tar xvf apache-maven-3.9.6-bin.tar.gz -C /opt && ln -s /opt/apache-maven-3.9.6 /opt/maven && ln -s /opt/maven/bin/mvn /usr/bin/mvn
 VOLUME /application
+COPY ./ /application
+RUN ./run.sh
 EXPOSE 8080
-ENV AUTH_URL=http://localhost:8081/auth
-ENV NOTIFICATION_URL=http://localhost:8086/notification
+ENV AUTH_URL=http://go-learn:8081/auth
+ENV NOTIFICATION_URL=http://python-learn:8082/notification
 CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c", "standalone-full.xml", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]

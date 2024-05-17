@@ -9,6 +9,7 @@ const Card = ({path,data}) => {
     const [currData, setData] = useState(data);
     const router = useRouter();
     const handleClick = (e) => {
+        if(path==undefined) return;
         e.preventDefault();
         const jsonData = JSON.stringify(data);
         localStorage.setItem('data', jsonData);

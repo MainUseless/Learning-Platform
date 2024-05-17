@@ -44,35 +44,32 @@ const Courses = () => {
     };
 
     const handleSearch = async () => {
-        let filtered = courses.filter(course => {
-            if (searchOption === 'name') {
-                return course[0].name.toLowerCase().includes(searchTerm.toLowerCase());
-            } else if (searchOption === 'category') {
-                return course[0].category.toLowerCase().includes(searchTerm.toLowerCase());
-            }
-            return false;
-        });
-
+        var url = process.env.NEXT_PUBLIC_LEARN_API_URL + '/course';
         if (myCourses){
-            try {
-                const authToken = Cookies.get('authToken');
-                const response = await fetch('http://localhost:8080/learn/course?mine=true', {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch courses');
-                }
-                const data = await response.json();
-                setCourses(data);
-                setFilteredCourses(data);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
-            }
+            url = url + '?mine=true';
         }
 
-        setFilteredCourses(filtered);
+ 
+        if(searchTerm != '') 
+            url = url + (myCourses ? "&" : "?")+searchOption+'=' + searchTerm;
+
+        try {
+            const authToken = Cookies.get('authToken');
+            const response = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch courses');
+            }
+            const data = await response.json();
+            setCourses(data);
+            setFilteredCourses(data);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+        }
+
     };
 
     return (

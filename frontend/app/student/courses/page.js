@@ -48,11 +48,13 @@ const Courses = () => {
             const response = await fetch(`http://localhost:8080/learn/enrollment?course_id=${courseId}`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${authToken}`
+                    Authorization: `Bearer ${authToken}`,
                 },
             });
             if (!response.ok) {
                 throw new Error('Failed to enroll in the course');
+            }else{
+                alert('enrollment request sent');
             }
 
         } catch (error) {

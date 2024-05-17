@@ -119,21 +119,19 @@ public class CourseRegistrationQueueMDB implements MessageListener {
         }
 
         String student_id = jwt.get("id");
-        Course c = em.find(Course.class, Integer.parseInt(courseId));
-        if(c == null){
-            return ;
-        }
 
-        int i = em.createNamedQuery("Enrollment.deleteByCourseIdAndStudentId", Enrollment.class)
-                        .setParameter("course_id", c.getId())
+        int i = em.createNamedQuery("Enrollment.deleteByCourseIdAndStudentId")
+                        .setParameter("course_id", Integer.parseInt(courseId))
                         .setParameter("id", Integer.parseInt(student_id))
                         .executeUpdate();
+
+        LOGGER.info("checkpoint1 "+i);
         
         if(i == 0){
-            notify.sendNotification(student_id, "Enrollment Request Not Found " + c.getName());
+            notify.sendNotification(student_id, "Enrollment Request Not Found " + courseId);
         }
         else{
-            notify.sendNotification(student_id, "Enrollment Request Cancelled " + c.getName());
+            notify.sendNotification(student_id, "Enrollment Request Cancelled " + courseId);
         }
 
     }

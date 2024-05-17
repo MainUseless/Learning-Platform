@@ -60,7 +60,7 @@ public class EnrollmentApi {
 
     @GET
     @Path("/")
-    public Response getAllEnrollments() {
+    public Response getAllEnrollments(@QueryParam("course_id") int course_id){
 
         try{
             String authToken = headers.getRequestHeaders().getFirst("Authorization");
@@ -79,6 +79,8 @@ public class EnrollmentApi {
             }
             else if(role.toUpperCase().equals("INSTRUCTOR")){
                 return Response.ok(em.createNamedQuery("Enrollment.findByInstructorId", Enrollment.class).setParameter("instructor_id", id).getResultList()).build();
+            }else if(role.toUpperCase().equals("ADMIN")){
+                return Response.ok(em.createNamedQuery("Enrollment.getAll", Enrollment.class).getResultList()).build();
             }
             
             return Response.status(Response.Status.UNAUTHORIZED).entity("Only students can view enrollments").build();
@@ -126,9 +128,6 @@ public class EnrollmentApi {
     @Path("/review")
     public Response reviewCourse(Map<String,String> review){
         try{
-            // if(review.get("review") == null || review.get("course_id") == null){
-            //     return Response.status(Response.Status.BAD_REQUEST).entity("Provide course_id and review").build();
-            // }
             String authToken = headers.getRequestHeaders().getFirst("Authorization");
             // Get the Authorization header
             Map<String,String> jwt = JwtParser.parse(authToken);
@@ -137,23 +136,28 @@ public class EnrollmentApi {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
-            if(review.get("review") == null || review.get("course_id") == null || review.get("rating") == null){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Provide course_id, review and rating").build();
-            }
-
+            
             String student_id = jwt.get("id");
             String role = jwt.get("role");
-
+            
             if(!role.toUpperCase().equals("STUDENT")){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Only students can review").build();
             }
             
-            Enrollment isEnrolled =  em.createNamedQuery("Enrollment.findByCourseIdAndStudentId",Enrollment.class).setParameter("course_id", Integer.valueOf(review.get("course_id"))).setParameter("id",Integer.valueOf(student_id)).getSingleResult();
-            
-            isEnrolled.setReview(review.get("review"));
-            isEnrolled.setRating(Double.valueOf(review.get("rating")));
+            if(review.get("review") == null || review.get("course_id") == null || review.get("rating") == null){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Provide course_id, review and rating").build();
+            }
 
-            em.merge(isEnrolled);
+            Enrollment e = em.createNamedQuery("Enrollment.findByCourseIdAndStudentId",Enrollment.class).setParameter("course_id", Integer.valueOf(review.get("course_id"))).setParameter("id",Integer.valueOf(student_id)).getSingleResult();
+
+            if(e == null){
+                return Response.status(Response.Status.BAD_REQUEST).entity("You are not enrolled in this course").build();
+            }
+
+            e.setReview(review.get("review"));
+            e.setRating(Double.valueOf(review.get("rating")));
+
+            em.merge(e);
 
             return Response.status(Response.Status.ACCEPTED).build();
         }catch(NoResultException e){

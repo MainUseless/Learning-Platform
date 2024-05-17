@@ -30,8 +30,9 @@ import lombok.NoArgsConstructor;
     @NamedQuery(name = "Course.updateStatus", query = "UPDATE Course c SET c.status = :status WHERE c.id = :id"),
     @NamedQuery(name = "Course.getNameById", query = "SELECT c.name FROM Course c WHERE c.id = :id"),
     @NamedQuery(name = "Course.getRating", query="SELECT AVG(e.rating) FROM Enrollment e WHERE e.course.id = :id"),
-    @NamedQuery(name = "Course.getAll", query="SELECT c FROM Course c"),
     @NamedQuery(name = "Course.getByIdAndRating", query="SELECT c, AVG(e.rating) FROM Course c left JOIN Enrollment e ON c.id = e.course.id WHERE c.id = :id GROUP BY c.id ORDER BY AVG(e.rating) DESC"),
+    @NamedQuery(name = "Course.getAll", query="SELECT c, AVG(e.rating) FROM Course c left JOIN Enrollment e ON c.id = e.course.id GROUP BY c.id ORDER BY AVG(e.rating) DESC"),
+    @NamedQuery(name = "Course.getCourseRatingAndEnrollmentCount", query = "SELECT c, AVG(e.rating), COUNT(e) FROM Course c LEFT JOIN Enrollment e ON c.id = e.course.id WHERE c.status = 'APPROVED' GROUP BY c.id"),
     @NamedQuery(name = "Course.getByInstructorIdAndRating", query="SELECT c, AVG(e.rating) FROM Course c left JOIN Enrollment e ON c.id = e.course.id WHERE c.instructorId = :instructorId GROUP BY c.id ORDER BY AVG(e.rating) DESC"),
     @NamedQuery(name = "Course.getByStatusAndRating", query="SELECT c, AVG(e.rating) FROM Course c left JOIN Enrollment e ON c.id = e.course.id WHERE c.status = :status GROUP BY c.id ORDER BY AVG(e.rating) DESC"),
     @NamedQuery(name = "Course.getByNameAndRating", query="SELECT c, AVG(e.rating) FROM Course c left JOIN Enrollment e ON c.id = e.course.id WHERE lower(c.name) like lower(concat('%',:name,'%')) GROUP BY c.id ORDER BY AVG(e.rating) DESC"),
@@ -67,18 +68,9 @@ public class Course implements java.io.Serializable{
     @OneToMany(mappedBy="course" ,fetch = FetchType.EAGER) 
     private Set<Enrollment> enrollments;
 
-
-    public Course(int id, String name, String content, String category, int duration, int capacity, String status, int instructorId){
-        this.id = id;
-        this.name = name;
-        this.content = content;
-        this.category = category;
-        this.duration = duration;
-        this.capacity = capacity;
-        this.status = status;
-        this.instructorId = instructorId;
+    public void addEnrollment(Enrollment enrollment){
+        enrollments.add(enrollment);
     }
-
     // @Column(name = "rating",columnDefinition = "double default 0")
     // private double rating;
 

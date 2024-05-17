@@ -39,6 +39,55 @@ const Enrollments = () => {
         }
     }, []);
 
+    const handleUnenroll = async (event) => {
+        try {
+            const authToken = Cookies.get('authToken');
+            const enrollmentId = Number(event.target.id);
+            const response = await fetch(`http://localhost:8080/learn/enrollment?course_id=${enrollmentId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to unenroll from the course');
+            } else {
+                alert('Unenrollment request sent');
+            }
+        } catch (error) {
+            console.error('Error unenrolling from the course:', error);
+        }
+    }
+
+    const handleReview = async (event) => {
+        try {
+            const authToken = Cookies.get('authToken');
+            const course_id = Number(event.target.id);
+            const rating = event.target.previousSibling.value;
+            const review = event.target.previousSibling.previousSibling.previousSibling.value;
+            const response = await fetch(`http://localhost:8080/learn/enrollment/review`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    course_id: course_id.toString(),
+                    rating: rating,
+                    review: review
+                })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to review the course');
+            } else {
+                alert('Review submitted');
+            }
+        } catch (error) {
+            console.error('Error reviewing the course:', error);
+        }
+
+    }  
+
     return (
         <div className="flex flex-col items-left justify-top min-h-screen bg-gray-100 text-black">
             <h1 className="text-2xl font-semibold mb-8">Enrollments</h1>
@@ -58,9 +107,23 @@ const Enrollments = () => {
                 <div>
                     <ul>
                         {enrollments.map((enrollment) => (
-                            <div>
+                            <div className="border-cyan-300 border-spacing-7 border-7">
                                 <Card data={enrollment} />
-                                <Card data={enrollment.course} />
+                                <div className="border-cyan-600 border-spacing-7 border-4">
+                                    <h2>course name :{enrollment.course.name}</h2>
+                                    <h2>course id :{enrollment.course.id}</h2>
+                                    <h2>course rating :{enrollment.course.rating}</h2>
+                                </div>
+                                {(enrollment.status == "ACCEPTED")&&
+                                    <div>
+                                        <h2>review</h2>
+                                        <textarea placeholder={enrollment.review}></textarea>
+                                        <h2>rating</h2>
+                                        <input type="number" min="1" max="5" placeholder={enrollment.rating}></input>
+                                        <button className="px-4 py-2 bg-blue-500 text-black rounded" id={enrollment.course.id} onClick={handleReview}>submit</button>
+                                        <button className="px-4 py-2 bg-blue-500 text-black rounded" id={enrollment.course.id} onClick={handleUnenroll}> Unenroll</button>
+                                    </div>
+                                }
                             </div>
                         ))}
                     </ul>

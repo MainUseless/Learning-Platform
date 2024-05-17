@@ -9,7 +9,6 @@ export default function Page() {
   const router = useRouter()
   
   const [course, setCourse] = useState(JSON.parse(localStorage.getItem('courseData')));
-  console.log(process.env.NEXT_PUBLIC_LEARN_API_URL);
   const handleSubmit = async () => {
     const response = await fetch(process.env.NEXT_PUBLIC_LEARN_API_URL + '/course/', {
       method: 'POST',
