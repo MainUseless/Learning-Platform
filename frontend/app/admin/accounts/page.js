@@ -39,7 +39,7 @@ const Courses = () => {
             <nav className="mb-8">
                 <div class="container flex flex-row space-x-7">
                     <div class="developer flex-grow-1">
-                        <h1 className="text-2xl font-semibold mb-4">Approved Courses</h1>
+                        <h1 className="text-2xl font-semibold mb-4">User Accounts</h1>
                         {accounts.map(account => (
                             <Card key={account.id} data={account} path={'/admin/accounts/'} />
                         ))}

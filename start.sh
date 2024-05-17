@@ -16,4 +16,4 @@ docker run -d -v ./learn:/application --net ALL -e NOTIFICATION_URL="http://pyth
 cd frontend
 docker build -t next-learn .
 cd ..
-docker run -d -p 3000:3000 -v ./frontend:/app --name next-learn next-learn
+docker run -d -p 3000:3000 --name next-learn next-learn
