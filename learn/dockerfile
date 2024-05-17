@@ -2,9 +2,8 @@ FROM quay.io/wildfly/wildfly:27.0.0.Final-jdk17
 USER root
 RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
 RUN tar xvf apache-maven-3.9.6-bin.tar.gz -C /opt && ln -s /opt/apache-maven-3.9.6 /opt/maven && ln -s /opt/maven/bin/mvn /usr/bin/mvn
-VOLUME /application
-COPY ./ /application
-RUN ./run.sh
+COPY . /application
+RUN /application/run.sh
 EXPOSE 8080
 ENV AUTH_URL=http://go-learn:8081/auth
 ENV NOTIFICATION_URL=http://python-learn:8082/notification
